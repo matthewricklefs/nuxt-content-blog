@@ -14,6 +14,3 @@ export default {
   name: 'DefaultVue',
 }
 </script>
-
-<style>
-</style>
