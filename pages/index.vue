@@ -13,7 +13,7 @@
       <v-col cols="12">
         <div class="filter">
           <v-select
-            model="category"
+            v-model="category"
             style="width: 100px"
             outlined
             dense
