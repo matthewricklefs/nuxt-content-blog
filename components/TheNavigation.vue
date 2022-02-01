@@ -1,6 +1,9 @@
 <template>
   <v-app-bar max-height="64">
-    <div class="search d-flex align-center justify-end ml-auto">
+    <div
+      v-if="$route.name === 'index'"
+      class="search d-flex align-center justify-end ml-auto"
+    >
       <v-text-field
         v-model="search"
         hide-details="auto"
@@ -18,12 +21,19 @@
 <script>
 export default {
   name: 'TheNavigation',
-  data: () => ({
-    search: '',
-  }),
+  computed: {
+    search: {
+      get() {
+        return this.$store.state.query
+      },
+      set(value) {
+        this.$store.commit('SET_QUERY', value)
+      },
+    },
+  },
   methods: {
     clearSearch() {
-      this.search = ''
+      this.$store.commit('SET_QUERY', '')
     },
   },
 }

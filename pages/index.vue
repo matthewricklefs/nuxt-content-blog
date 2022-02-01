@@ -93,6 +93,17 @@ export default {
   data: () => ({
     category: 'all',
   }),
+  computed: {
+    searchQuery() {
+      return this.$store.state.query
+    },
+  },
+
+  watch: {
+    searchQuery(newValue) {
+      this.fetchPosts(newValue)
+    },
+  },
   methods: {
     async fetchNext() {
       this.page += 1
@@ -102,10 +113,11 @@ export default {
       this.page -= 1
       await this.fetchPosts()
     },
-    async fetchPosts() {
+    async fetchPosts(query = '') {
       const fetchedPosts = await this.$content()
         .limit(this.limit)
         .sortBy('createdAt', 'desc')
+        .search(query)
         .skip((this.limit - 1) * (this.page - 1))
         .fetch()
 
