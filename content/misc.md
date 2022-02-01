@@ -1,7 +1,7 @@
 ---
 title: Getting started with Nuxt.js Ideas
 description: Take your creativity to the next level!
-category: life
+category: misc
 tags:
   - Nuxt.js
   - Javascript

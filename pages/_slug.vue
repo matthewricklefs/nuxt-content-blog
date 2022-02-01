@@ -52,6 +52,36 @@ export default {
       next,
     }
   },
+
+  head() {
+    return {
+      title: this.post.title,
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: this.post.description,
+        },
+        // open graph
+        {
+          hid: 'og:title',
+          property: 'og:title',
+          content: this.post.title,
+        },
+        // twitter card
+        {
+          hid: 'twitter:title',
+          name: 'twitter:title',
+          content: this.post.title,
+        },
+        {
+          hid: 'twitter:description',
+          name: 'twitter:description',
+          content: this.post.description,
+        },
+      ],
+    }
+  },
 }
 </script>
 

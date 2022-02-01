@@ -9,16 +9,23 @@
       </h2>
     </div>
 
-    <v-row class="posts-container">
+    <v-row v-if="!posts.length">
+      <v-col cols="12">
+        <p>No posts found, yet. <span class="emoji">😁</span></p>
+      </v-col>
+    </v-row>
+
+    <v-row v-else class="posts-container">
       <v-col cols="12">
         <div class="filter">
           <v-select
+            v-if="categories.length"
             v-model="category"
             style="width: 100px"
             outlined
             dense
             hide-details="auto"
-            :items="['all', 'coding', 'youtube']"
+            :items="categories"
           />
         </div>
       </v-col>
@@ -52,7 +59,7 @@
       </v-col>
     </v-row>
 
-    <v-row class="post-pagination">
+    <v-row v-if="posts.length" class="post-pagination">
       <v-col class="text-right" cols="12">
         <v-btn :disabled="page === 1" @click="fetchPrevious">
           <v-icon small> mdi-arrow-left</v-icon>
@@ -90,9 +97,23 @@ export default {
       nextPage,
     }
   },
+
   data: () => ({
     category: 'all',
+    categories: [],
   }),
+
+  fetch() {
+    this.$content()
+      .only(['category'])
+      .fetch()
+      .then((categories) => {
+        // A set is not allowed to have duplicates
+        const payload = Array.from(new Set(categories.map((c) => c.category)))
+        this.categories = ['all', ...payload]
+      })
+  },
+
   computed: {
     searchQuery() {
       return this.$store.state.query
@@ -100,10 +121,16 @@ export default {
   },
 
   watch: {
-    searchQuery(newValue) {
-      this.fetchPosts(newValue)
+    async searchQuery(newValue) {
+      this.page = 1
+      await this.fetchPosts(newValue)
+    },
+    async category() {
+      this.page += 1
+      await this.fetchPosts(this.searchQuery)
     },
   },
+
   methods: {
     async fetchNext() {
       this.page += 1
@@ -114,8 +141,13 @@ export default {
       await this.fetchPosts()
     },
     async fetchPosts(query = '') {
-      const fetchedPosts = await this.$content()
-        .limit(this.limit)
+      let baseFetch = this.$content().limit(this.limit)
+
+      if (this.category !== 'all') {
+        baseFetch = baseFetch.where({ category: this.category })
+      }
+
+      const fetchedPosts = await baseFetch
         .sortBy('createdAt', 'desc')
         .search(query)
         .skip((this.limit - 1) * (this.page - 1))
