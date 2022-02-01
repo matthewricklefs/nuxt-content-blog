@@ -3,6 +3,7 @@
   <v-app>
     <!-- Navigation -->
     <TheNavigation />
+
     <v-main>
       <v-container>
         <v-row>
@@ -21,6 +22,7 @@
 
 <script>
 import TheNavigation from '~/components/TheNavigation.vue'
+
 export default {
   name: 'DefaultLayout',
   components: { TheNavigation },
