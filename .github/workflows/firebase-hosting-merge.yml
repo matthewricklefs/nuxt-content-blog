@@ -11,16 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Install deps
       - run: yarn
-      - name: Build app
-      - run: yarn build
+
       - name: Generate site
       - run: yarn generate
+
       - name: Deploy site
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MATTY_DEV_BLOG }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEVELOPMENT_BLOG }}'
           channelId: live
           projectId: matty-dev-blog
