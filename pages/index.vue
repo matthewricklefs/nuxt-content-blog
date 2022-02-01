@@ -18,7 +18,7 @@
             outlined
             dense
             hide-details="auto"
-            :items="['all', 'coding', 'youtbe']"
+            :items="['all', 'coding', 'youtube']"
           />
         </div>
       </v-col>
@@ -26,6 +26,19 @@
       <v-col v-for="post in posts" :key="post.slug" cols="12" md="6">
         <v-card elevation="0">
           <v-card-title> {{ post.title }} </v-card-title>
+
+          <v-card-subtitle>
+            {{
+              new Intl.DateTimeFormat('en-US', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+              }).format(new Date(post.createdAt))
+            }}
+          </v-card-subtitle>
 
           <v-card-text>
             <!-- synonymous with !more in .md file -->
