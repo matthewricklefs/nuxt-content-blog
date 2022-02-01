@@ -25,17 +25,15 @@
 
       <v-col v-for="post in posts" :key="post.slug" cols="12" md="6">
         <v-card elevation="0">
-          <v-card-title> My First Blog </v-card-title>
+          <v-card-title> {{ post.title }} </v-card-title>
 
-          <v-card-text
-            >Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sequi
-            error corporis dolore, ullam autem possimus dolorum dolor nihil
-            nulla! Eaque nemo saepe doloribus mollitia quos ex! Officiis
-            voluptates voluptatibus et?</v-card-text
-          >
+          <v-card-text>
+            <!-- synonymous with !more in .md file -->
+            <nuxt-content :document="{ body: post.excerpt }" />
+          </v-card-text>
 
           <v-card-actions>
-            <v-btn text to="/1">Read More</v-btn>
+            <v-btn text :to="post.path">Read More</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -43,11 +41,11 @@
 
     <v-row class="post-pagination">
       <v-col class="text-right" cols="12">
-        <v-btn>
+        <v-btn :disabled="page === 1" @click="fetchPrevious">
           <v-icon small> mdi-arrow-left</v-icon>
         </v-btn>
 
-        <v-btn>
+        <v-btn :disabled="!nextPage" @click="fetchNext">
           <v-icon small> mdi-arrow-right</v-icon>
         </v-btn>
       </v-col>
@@ -82,8 +80,27 @@ export default {
   data: () => ({
     category: 'all',
   }),
-  mounted() {
-    console.log(this.posts)
+  methods: {
+    async fetchNext() {
+      this.page += 1
+      await this.fetchPosts()
+    },
+    async fetchPrevious() {
+      this.page -= 1
+      await this.fetchPosts()
+    },
+    async fetchPosts() {
+      const fetchedPosts = await this.$content()
+        .limit(this.limit)
+        .sortBy('createdAt', 'desc')
+        .skip((this.limit - 1) * (this.page - 1))
+        .fetch()
+
+      this.nextPage = fetchedPosts.length === this.limit
+      const posts = this.nextPage ? fetchedPosts.slice(0, -1) : fetchedPosts
+
+      this.posts = posts
+    },
   },
 }
 </script>
