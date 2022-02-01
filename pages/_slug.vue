@@ -8,30 +8,18 @@
     </section>
 
     <section class="post-content">
-      <h1>My First Post</h1>
-
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto
-        illum vel, odio nobis repellendus praesentium eaque amet rerum.
-        Recusandae, eos! Saepe molestias dolores natus error quisquam est
-        dolorum accusantium deleniti. Hic repellendus, libero nostrum ut
-        pariatur accusantium ad odio eligendi labore dignissimos necessitatibus
-        quia reprehenderit odit alias doloremque ipsum.
-        <br />
-        Omnis officia enim quas eaque repellendus pariatur molestiae explicabo
-        obcaecati sed! Eligendi, quod quo molestias alias libero, quibusdam ad
-        iure illum veniam officia harum voluptates! Culpa suscipit tempora esse?
-        <br />
-        <br />
-        Similique nemo aspernatur deleniti consequuntur nulla dolor, natus
-        molestias veniam quis culpa.
-      </p>
+      <h2 class="text-h2 mb-10">{{ post.title }}</h2>
+      <nuxt-content :document="post" />
     </section>
 
     <v-row class="d-flex justify-space-between align-center mt-5" cols="12">
       <v-col>
-        <v-btn small class="mr-2">Previous Post </v-btn>
-        <v-btn small class="mr-2">Next Post</v-btn>
+        <v-btn :disabled="!prev" :to="prev && prev.path" small class="mr-2"
+          >Previous Post
+        </v-btn>
+        <v-btn :disabled="!next" :to="next && next.path" small class="mr-2"
+          >Next Post</v-btn
+        >
       </v-col>
     </v-row>
   </v-container>
@@ -41,6 +29,29 @@
 export default {
   name: 'PostPage',
   layout: 'DefaultLayout',
+  async asyncData({ $content, error, params }) {
+    // TODO Paginate posts
+    const [prev, next] = await $content()
+      .only(['path'])
+      .sortBy('createdAt', 'desc')
+      .surround(params.slug)
+      .fetch()
+
+    const post = await $content(params.slug)
+      .fetch()
+      .catch(() =>
+        error({
+          statusCode: 404,
+          message: 'Oops, looks like that post does not exist!',
+        })
+      )
+
+    return {
+      post,
+      prev,
+      next,
+    }
+  },
 }
 </script>
 
