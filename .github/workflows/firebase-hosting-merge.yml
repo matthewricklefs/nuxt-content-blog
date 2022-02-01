@@ -11,14 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: npm ci && npm run build && npm run generate && NITRO_PRESET=firebase npm run build && firebase deploy --token '${{ secrets.FIREBASE_CI_TOKEN }}'
-
-      - name: Install deps
-      - run: npm install
-
-      - name: Generate site
-      - run: npm run generate
-
+      - run: npm ci && npm run build && npm run generate && NITRO_PRESET=firebase npm run generate && firebase deploy --token '${{ secrets.GITHUB_TOKEN }}'
       - name: Deploy site
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
